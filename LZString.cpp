@@ -481,7 +481,7 @@ std::wstring LZString::DeCompress(const int length, const int resetValue, GetNex
 			bits |= (resb > 0 ? 1 : 0) * power;
 			power <<= 1;
 		}
-		c = (char)bits;
+		c = (wchar_t)bits;
 		break;
 	case 1:
 		bits = 0;
@@ -533,7 +533,7 @@ std::wstring LZString::DeCompress(const int length, const int resetValue, GetNex
 		int c2;
 		switch (c2 = bits)
 		{
-		case (char)0:
+		case (wchar_t)0:
 			bits = 0;
 			maxpower = (int)pow(2, 8);
 			power = 1;
@@ -554,7 +554,7 @@ std::wstring LZString::DeCompress(const int length, const int resetValue, GetNex
 			dict.push_back(std::wstring(1, (wchar_t)bits));
 			enLargeIn--;
 			break;
-		case (char)1:
+		case (wchar_t)1:
 			bits = 0;
 			maxpower = (int)pow(2, 16);
 			power = 1;
@@ -575,7 +575,7 @@ std::wstring LZString::DeCompress(const int length, const int resetValue, GetNex
 			dict.push_back(std::wstring(1, (wchar_t)bits));
 			enLargeIn--;
 			break;
-		case (char)2:
+		case (wchar_t)2:
 			return result;
 		}
 
@@ -593,7 +593,7 @@ std::wstring LZString::DeCompress(const int length, const int resetValue, GetNex
 		{
 			if (c2 == dict.size())
 			{
-				entry += w + w[0];
+				entry = w + w[0];
 			}
 			else
 			{
