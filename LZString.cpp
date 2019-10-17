@@ -1,6 +1,8 @@
 #include "LZString.h"
 
-#include <math.h>
+#include "ConvertStrUtil.h"
+
+#include <cmath>
 #include <vector>
 
 namespace lzw
@@ -26,131 +28,137 @@ void LZString::CreateBaseDict(const std::string &alphabet, CharDict &dict)
 	}
 }
 
-std::string LZString::CompressToBase64(const std::string &input)
+std::string LZString::CompressToBase64(const std::wstring &input)
 {
 	if (input.empty())
 		return std::string();
 
-	std::string res = Compress(input, 6, [](int code) {return kKeyStrBase64[code];});
-	switch(res.size() % 4) {
-		case 0:
-			return res;
-		case 1:
-			return res+"===";
-		case 2:
-			return res+"==";
-		case 3:
-			return res+"=";
-		default:
-			return "";
+	std::wstring tmp = Compress(input, 6, [](int code) { return kKeyStrBase64[code]; });
+	std::string res = to_string(tmp);
+	switch (res.size() % 4)
+	{
+	case 0:
+		return res;
+	case 1:
+		return res + "===";
+	case 2:
+		return res + "==";
+	case 3:
+		return res + "=";
+	default:
+		return "";
 	}
 }
 
-std::string LZString::DeCompressFromBase64(const std::string &input)
+std::wstring LZString::DeCompressFromBase64(const std::string &input)
+{
+	if (input.empty())
+		return std::wstring();
+
+	return DeCompress(input.size(), 32, [this, &input](int index) { return m_keyStrBase64Dict[input[index]]; });
+}
+
+std::wstring LZString::CompressToUTF16(const std::wstring &input)
+{
+	if (input.empty())
+		return std::wstring();
+
+	return Compress(input, 15, [](int code) { return (wchar_t)(code + 32); });
+}
+
+std::wstring LZString::DeCompressFromUTF16(const std::wstring &input)
+{
+	if (input.empty())
+		return std::wstring();
+
+	return DeCompress(input.size(), 16384, [&input](int index) { return (wchar_t)(input[index] - 32); });
+}
+
+std::string LZString::CompressToEncodedURIComponent(const std::wstring &input)
 {
 	if (input.empty())
 		return std::string();
 
-	return DeCompress(input.size(), 32, [this, &input](int index){return m_keyStrBase64Dict[input[index]];});
+	std::wstring tmp = Compress(input, 6, [](int code) { return (wchar_t)kKeyStrUriSafe[code]; });
+	std::string res = to_string(tmp);
+	return res;
 }
 
-std::string LZString::CompressToUTF16(const std::string input)
+std::wstring LZString::DeCompressFromEncodedURIComponent(const std::string &input)
 {
 	if (input.empty())
-		return std::string();
+		return std::wstring();
 
-	return Compress(input, 15, [](int code) {return (char)(code + 32);});
+	return DeCompress(input.size(), 32, [this, &input](int index) { return (wchar_t)m_keyStrUrisafeDict[input[index]]; });
 }
 
-std::string LZString::DeCompressFromUTF16(const std::string input)
-{
-	if (input.empty())
-		return std::string();
-
-	return DeCompress(input.size(), 16384, [&input](int index){return (char)(input[index] - 32);});
-}
-
-std::string LZString::CompressToEncodedURIComponent(const std::string input)
-{
-	if (input.empty())
-		return std::string();
-	
-	return Compress(input, 6, [](int code) {return kKeyStrUriSafe[code];});
-}
-
-std::string LZString::DeCompressFromEncodedURIComponent(const std::string input)
-{
-	if (input.empty())
-		return std::string();
-	
-	return DeCompress(input.size(), 32, [this, &input](int index){return m_keyStrUrisafeDict[input[index]];});
-}
-
-void LZString::CompressToUint8Array(const std::string &input, std::vector<uint8_t> &res)
+void LZString::CompressToUint8Array(const std::wstring &input, std::vector<uint8_t> &res)
 {
 	if (input.empty())
 		return;
 
 	res.clear();
-	std::string compressStr = Compress(input);
-	res.assign(compressStr.size()*2, 0);
-	for(size_t i = 0; i< compressStr.size(); i++) {
+	std::wstring compressStr = Compress(input);
+	res.assign(compressStr.size() * 2, 0);
+	for (size_t i = 0; i < compressStr.size(); i++)
+	{
 		int currentValue = (int)compressStr[i];
-		res[i*2] = (char)(currentValue >> 8);
-		res[i*2+1] = (char)(currentValue % 256);
+		res[i * 2] = (char)(currentValue >> 8);
+		res[i * 2 + 1] = (char)(currentValue % 256);
 	}
 }
 
-std::string LZString::DeCompressFromUint8Array(const std::vector<uint8_t> &input)
+std::wstring LZString::DeCompressFromUint8Array(const std::vector<uint8_t> &input)
 {
 	if (input.empty())
-		return std::string();
+		return std::wstring();
 
-	std::string res;
-	for(size_t i = 0; i< input.size() /2; i++) {
-		res += (char)(input[i*2] *256 + input[i*2+1]);
+	std::wstring res;
+	for (size_t i = 0; i < input.size() / 2; i++)
+	{
+		res += (wchar_t)(input[i * 2] * 256 + input[i * 2 + 1]);
 	}
 
 	return DeCompress(res);
 }
 
-std::string LZString::Compress(const std::string &input)
+std::wstring LZString::Compress(const std::wstring &input)
 {
 	if (input.empty())
-		return std::string();
+		return std::wstring();
 
-	return Compress(input, 16, [](int code){return (wchar_t)code;});
+	return Compress(input, 16, [](int code) { return (wchar_t)code; });
 }
 
-std::string LZString::DeCompress(const std::string &input)
+std::wstring LZString::DeCompress(const std::wstring &input)
 {
 	if (input.empty())
-		return std::string();
+		return std::wstring();
 
-	return DeCompress(input.size(), 32768, [&input](int index) { return input[index];});
+	return DeCompress(input.size(), 32768, [&input](int index) { return input[index]; });
 }
 
-std::string LZString::Compress(const std::string &input, const int bitsPerChar, GetCharFromIntFunc func)
+std::wstring LZString::Compress(const std::wstring &input, const int bitsPerChar, GetCharFromIntFunc func)
 {
 	if (input.empty())
-		return std::string();
+		return std::wstring();
 
 	int i = 0, value = 0;
 	StringDict contextDict;
 	StringFlagDict contextFlagDict;
-	std::string contextWc = "";
-	std::string contextW = "";
+	std::wstring contextWc;
+	std::wstring contextW;
 	int contextEnlargeIn = 2; // Compensate for the first entry which should not count
 	int contextDictSize = 3;
 	int contextNumBits = 2;
-	std::string contextData;
+	std::wstring contextData;
 	int contextDataVal = 0;
 	int contextDataPosition = 0;
 
 	for (size_t index = 0; index < input.size(); index++)
 	{
-		char contextC = input[index];
-		std::string contextStr = std::string(1, contextC);
+		wchar_t contextC = input[index];
+		std::wstring contextStr = std::wstring(1, contextC);
 		if (contextDict.find(contextStr) == contextDict.end())
 		{
 			contextDict[contextStr] = contextDictSize++;
@@ -276,7 +284,7 @@ std::string LZString::Compress(const std::string &input, const int bitsPerChar, 
 	}
 
 	// Output the code for w.
-	if (contextW != "")
+	if (!contextW.empty())
 	{
 		if (contextFlagDict.find(contextW) != contextFlagDict.end())
 		{
@@ -408,8 +416,7 @@ std::string LZString::Compress(const std::string &input, const int bitsPerChar, 
 		contextDataVal = (contextDataVal << 1);
 		if (contextDataPosition == bitsPerChar - 1)
 		{
-			int code = func(contextDataVal);
-			contextData.push_back(code);
+			contextData.push_back(func(contextDataVal));
 			break;
 		}
 		else
@@ -421,24 +428,24 @@ std::string LZString::Compress(const std::string &input, const int bitsPerChar, 
 	return contextData;
 }
 
-std::string LZString::DeCompress(const int length, const int resetValue, GetNextCharFunc func)
+std::wstring LZString::DeCompress(const int length, const int resetValue, GetNextCharFunc func)
 {
-	std::vector<std::string> dict;
+	std::vector<std::wstring> dict;
 	int enLargeIn = 4;
 	int numBits = 3;
-	std::string entry;
-	std::string result;
-	std::string w;
+	std::wstring entry;
+	std::wstring result;
+	std::wstring w;
 	int bits = 0, resb, maxpower, power;
-	char c = '\0';
+	wchar_t c = '\0';
 
-	char dataVal = func(0);
+	wchar_t dataVal = func(0);
 	int dataPosition = resetValue;
 	int dataIndex = 1;
 
 	for (size_t i = 0; i < 3; i++)
 	{
-		dict.push_back(std::to_string(i));
+		dict.push_back(std::to_wstring(i));
 	}
 
 	maxpower = (int)pow(2, 2);
@@ -492,19 +499,19 @@ std::string LZString::DeCompress(const int length, const int resetValue, GetNext
 			bits |= (resb > 0 ? 1 : 0) * power;
 			power <<= 1;
 		}
-		c = (char)bits;
+		c = (wchar_t)bits;
 		break;
 	case 2:
-		return "";
+		return L"";
 	}
-	w = std::string(1, c);
+	w = std::wstring(1, c);
 	dict.push_back(w);
 	result.push_back(c);
 	while (true)
 	{
 		if (dataIndex > length)
 		{
-			return "";
+			return L"";
 		}
 
 		bits = 0;
@@ -544,7 +551,7 @@ std::string LZString::DeCompress(const int length, const int resetValue, GetNext
 			}
 
 			c2 = dict.size();
-			dict.push_back(std::string(1, (char)bits));
+			dict.push_back(std::wstring(1, (wchar_t)bits));
 			enLargeIn--;
 			break;
 		case (char)1:
@@ -565,7 +572,7 @@ std::string LZString::DeCompress(const int length, const int resetValue, GetNext
 			}
 
 			c2 = dict.size();
-			dict.push_back(std::string(1, (char)bits));
+			dict.push_back(std::wstring(1, (wchar_t)bits));
 			enLargeIn--;
 			break;
 		case (char)2:
@@ -590,7 +597,7 @@ std::string LZString::DeCompress(const int length, const int resetValue, GetNext
 			}
 			else
 			{
-				return std::string();
+				return std::wstring();
 			}
 		}
 

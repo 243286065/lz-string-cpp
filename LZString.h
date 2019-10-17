@@ -11,34 +11,35 @@ namespace lzw
 class LZString
 {
 	typedef std::unordered_map<char, char> CharDict;
-	typedef std::unordered_map<std::string, int> StringDict;
-	typedef std::unordered_map<std::string, bool> StringFlagDict;
-	typedef std::function<char(int)> GetCharFromIntFunc;
-	typedef std::function<char(int)> GetNextCharFunc;
+	typedef std::unordered_map<std::wstring, int> StringDict;
+	typedef std::unordered_map<std::wstring, bool> StringFlagDict;
+	typedef std::function<wchar_t(int)> GetCharFromIntFunc;
+	typedef std::function<wchar_t(int)> GetNextCharFunc;
 
 public:
 	LZString();
 	~LZString();
 
-	std::string CompressToBase64(const std::string& input);
-	std::string DeCompressFromBase64(const std::string& input);
+	std::string CompressToBase64(const std::wstring &input);
+	std::wstring DeCompressFromBase64(const std::string &input);
 
-	std::string CompressToUTF16(const std::string input);
-	std::string DeCompressFromUTF16(const std::string input);
+	std::wstring CompressToUTF16(const std::wstring &input);
+	std::wstring DeCompressFromUTF16(const std::wstring &input);
 
-	std::string CompressToEncodedURIComponent(const std::string input);
-	std::string DeCompressFromEncodedURIComponent(const std::string input);
+	std::string CompressToEncodedURIComponent(const std::wstring &input);
+	std::wstring DeCompressFromEncodedURIComponent(const std::string &input);
 
-	void CompressToUint8Array(const std::string &input, std::vector<uint8_t>& res);
-	std::string DeCompressFromUint8Array(const std::vector<uint8_t>& input);
+	void CompressToUint8Array(const std::wstring &input, std::vector<uint8_t> &res);
+	std::wstring DeCompressFromUint8Array(const std::vector<uint8_t> &input);
 
-	std::string Compress(const std::string &input);
-	std::string DeCompress(const std::string &input);
+	std::wstring Compress(const std::wstring &input);
+	std::wstring DeCompress(const std::wstring &input);
+
 private:
-	void CreateBaseDict(const std::string& alphabet, CharDict& dict);
+	void CreateBaseDict(const std::string &alphabet, CharDict &dict);
 
-	std::string Compress(const std::string& input, const int bitsPerChar, GetCharFromIntFunc func);
-	std::string DeCompress(const int length, const int resetValue, GetNextCharFunc func);
+	std::wstring Compress(const std::wstring &input, const int bitsPerChar, GetCharFromIntFunc func);
+	std::wstring DeCompress(const int length, const int resetValue, GetNextCharFunc func);
 
 	CharDict m_keyStrBase64Dict;
 	CharDict m_keyStrUrisafeDict;
