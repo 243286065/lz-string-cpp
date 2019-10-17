@@ -1,11 +1,11 @@
-#ifndef LZW_LZSTRING_H_
-#define LZW_LZSTRING_H_
+#ifndef LZ_STRING_LZ_STRING_H_
+#define LZ_STRING_LZ_STRING_H_
 
 #include <string>
 #include <unordered_map>
 #include <functional>
 
-namespace lzw
+namespace lzstring
 {
 
 class LZString
@@ -45,6 +45,6 @@ private:
 	CharDict m_keyStrUrisafeDict;
 };
 
-} // namespace lzw
+} // namespace lzstring
 
 #endif

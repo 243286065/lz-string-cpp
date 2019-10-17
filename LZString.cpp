@@ -5,7 +5,7 @@
 #include <cmath>
 #include <vector>
 
-namespace lzw
+namespace lzstring
 {
 
 const std::string kKeyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -617,4 +617,4 @@ std::wstring LZString::DeCompress(const int length, const int resetValue, GetNex
 	}
 }
 
-} // namespace lzw
+} // namespace lzstring

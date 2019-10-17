@@ -5,7 +5,7 @@
 #include <clocale>
 #include <vector>
 
-namespace lzw
+namespace lzstring
 {
 std::string to_string(std::wstring const &src)
 {
@@ -37,4 +37,4 @@ std::wstring to_wstring(std::string const &src)
     return dest;
 }
 
-} // namespace lzw
+} // namespace lzstring

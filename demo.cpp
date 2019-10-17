@@ -6,8 +6,8 @@ int main(int argc, char *argv[])
 {
   if (argc == 2)
   {
-    lzw::LZString encoder;
-    std::wstring input(lzw::to_wstring(argv[1]));
+    lzstring::LZString encoder;
+    std::wstring input(lzstring::to_wstring(argv[1]));
     std::string compressStr;
     std::wstring compressWStr;
     std::string decompressStr;
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     std::cout << "rate: " << (double(compressWStr.size())) / input.size() << std::endl;
 
     std::cout << "-------------------------------------------" << std::endl;
-    std::cout << "[LZW]" << std::endl;
+    std::cout << "[LZ String]" << std::endl;
     compressWStr = encoder.Compress(input);
     decompressWStr = encoder.DeCompress(compressWStr);
     //std::wcout << "compress: " << compressWStr << std::endl;
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     std::cout << "rate: " << (double(compressWStr.size())) / input.size() << std::endl;
 
     std::cout << "-------------------------------------------" << std::endl;
-    std::cout << "[LZW uint8 array]" << std::endl;
+    std::cout << "[LZ String uint8 array]" << std::endl;
     std::vector<uint8_t> test;
     encoder.CompressToUint8Array(input, test);
     decompressWStr = encoder.DeCompressFromUint8Array(test);
