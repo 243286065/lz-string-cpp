@@ -51,6 +51,4 @@ private:
 
 } // namespace lzstring
 
-extern std::shared_ptr<lzstring::LZString> WRAPPER_API GetLZSInstance();
-
 #endif

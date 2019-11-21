@@ -3,7 +3,7 @@ from conans import ConanFile, CMake, tools
 
 class LzstringcppConan(ConanFile):
     name = "LZStringcpp"
-    version = "1.0.1"
+    version = "1.1.0"
     license = "MIT"
     author = "xl"
     url = "https://github.com/243286065/lz-string-cpp/tree/dev"

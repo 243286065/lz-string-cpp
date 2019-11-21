@@ -618,9 +618,3 @@ std::wstring LZString::DeCompress(const int length, const int resetValue, GetNex
 }
 
 } // namespace lzstring
-
-std::shared_ptr<lzstring::LZString> GetLZSInstance()
-{
-	static std::shared_ptr<lzstring::LZString> g_instance = std::make_shared<lzstring::LZString>();
-	return g_instance;
-}
