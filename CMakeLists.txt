@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.8)
-project(demo)
-aux_source_directory(. DIR_SRCS)
+project(LZStringcpp)
+aux_source_directory(src DIR_SRCS)
 
 # 指定生成目标
-add_executable(demo ${DIR_SRCS})
+add_library(${PROJECT_NAME} ${DIR_SRCS})
